@@ -10,7 +10,7 @@ const roleName=id=>ROLE_BY.get(id)?.Name||id;
 const PERM_AR={ViewProducts:'عرض المنتجات',EditProducts:'تعديل المنتجات',ChangeDefaultPrice:'تغيير السعر الأساسي',ViewStock:'عرض المخزون',StockIn:'استلام مخزون',StockOut:'صرف مخزون',
   StockTransfer:'نقل بين المخازن',CreateInvoice:'إنشاء فاتورة',EditInvoice:'تعديل فاتورة',CancelInvoice:'إلغاء فاتورة',CreateReturn:'عمل مرتجع',ViewCustomers:'عرض العملاء',
   EditCustomers:'تعديل العملاء',ViewReports:'التقارير',ViewCost:'رؤية التكلفة والهامش',ViewAudit:'سجل العمليات',ManageUsers:'إدارة المستخدمين',ManageRoles:'إدارة الأدوار',
-  ManageSettings:'الإعدادات',ManageSync:'المزامنة',OverridePrice:'تعديل سعر الصنف في الفاتورة',OverrideStock:'تجاوز الرصيد',VoidStockDoc:'إلغاء مستندات المخزن'};
+  ManageSettings:'الإعدادات',ManageSync:'المزامنة',ManageWarehouses:'إدارة المخازن',OverridePrice:'تعديل سعر الصنف في الفاتورة',OverrideStock:'تجاوز الرصيد',VoidStockDoc:'إلغاء مستندات المخزن'};
 // صلاحيات مقفولة بالدور: ManageRoles للمالك بس، و ManageUsers ممنوعة على الـ STAFF حتى لو اتضافت كصلاحية إضافية
 const LOCKED=(roleId,perm)=>(perm==='ManageRoles'&&roleId!=='OWNER')||(perm==='ManageUsers'&&roleId==='STAFF');
 const snap=u=>JSON.stringify({Name:u.Name,RoleID:u.RoleID,Active:u.Active,ExtraPerms:u.ExtraPerms||[],DeniedPerms:u.DeniedPerms||[]});   // من غير Salt/PinHash أبداً
