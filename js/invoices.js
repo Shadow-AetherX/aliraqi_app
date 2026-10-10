@@ -1,6 +1,6 @@
 // شاشة الفواتير: إنشاء فاتورة (عميل + أصناف بالمسح/البحث + كراتين/قطع + سعر)، قائمة الفواتير، عرض الفاتورة + PDF/صور للمشاركة.
 // الفاتورة ما بتتمسح أبداً: التعديل (نسخة جديدة، مسموح حتى مع مرتجع على أساس الصافي)، المرتجع (إشعار CN)، والإلغاء (ختم ملغاة + حركات عكسية) في reversal.js. الحفظ = فاتورة + بنودها + حركات الصرف + طابور المزامنة + سجل العمليات في معاملة واحدة.
-import {all,get,byIndex,txRun,uuid,nowISO,deviceId,ymd,stockMap,toPieces} from './db.js';
+import {all,get,byIndex,txRun,uuid,nowISO,deviceId,ymd,stockMap,toPieces,pickWarehouse} from './db.js';
 import {can} from './auth.js';
 import {norm,compact} from './products.js';
 import {$,el,toast,fmt,modal,askReason} from './ui.js';
@@ -78,7 +78,7 @@ export async function showInvoiceNew(user,onBack,opts={}){
   const lines=new Map();                                   // productId -> {cartons,pieces,price}
   if(edit)for(const l of edit.lines)lines.set(l.ProductID,{cartons:l.Cartons,pieces:l.Pieces,price:l.UnitPrice});
 
-  const lastWh=localStorage.getItem('alr_last_wh'),hasLast=!edit&&whs.some(w=>w.WarehouseID===lastWh);
+  const lastWh=edit?'':pickWarehouse(whs),hasLast=!edit&&!!lastWh;   // الافتراضي أولاً ثم آخر مخزن اتستخدم
   const whSel=el('select',{'aria-label':'المخزن',onchange:()=>{if(!edit&&whSel.value)localStorage.setItem('alr_last_wh',whSel.value);updateTotals()}},
     !hasLast&&!edit&&el('option',{value:''},'اختر المخزن…'),whs.map(w=>el('option',{value:w.WarehouseID},w.Name)));
   if(edit){whSel.value=edit.inv.WarehouseID;whSel.disabled=true}else if(hasLast)whSel.value=lastWh;
