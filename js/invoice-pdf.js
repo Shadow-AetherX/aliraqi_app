@@ -23,7 +23,7 @@ export function loadInvoiceFonts(){
     await Promise.all([a.load(),b.load()]);document.fonts.add(a);document.fonts.add(b);
   })().catch(e=>{_fonts=null;throw e}));
 }
-function loadPdfLib(){
+export function loadPdfLib(){
   if(window.PDFLib) return Promise.resolve();
   return _pdfLib||(_pdfLib=new Promise((res,rej)=>{const s=document.createElement('script');s.src=here('./pdf-lib.min.js');
     s.onload=()=>window.PDFLib?res():rej(new Error('pdf-lib'));s.onerror=()=>{_pdfLib=null;rej(new Error('ملف js/pdf-lib.min.js مش موجود'))};document.head.append(s)}));
