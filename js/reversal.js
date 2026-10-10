@@ -126,7 +126,8 @@ export async function createCreditNote({invoiceId,items,reason,user}){
             const tp=toPieces(r.cartons,r.pieces,pcs),rem=l.TotalPieces-(ret.get(l.LineID)||0);
             if(tp>rem)return fail(E(`الكمية أكبر من المتاح للمرتجع للصنف «${l.Name}» (المتاح ${rem})`,'OVER_RETURN',{lineId:l.LineID,remaining:rem,requested:tp}));
             cnLines.push({LineID:uuid(),CreditNoteID:cnId,ParentInvoiceID:invoiceId,ParentLineID:l.LineID,LineNo:++i,ProductID:l.ProductID,Code:l.Code,Name:l.Name,
-              Cartons:r.cartons,Pieces:r.pieces,PcsPerCarton:pcs,TotalPieces:tp,UnitPrice:l.UnitPrice,LineTotal:r2(tp*l.UnitPrice)});
+              Cartons:r.cartons,Pieces:r.pieces,PcsPerCarton:pcs,TotalPieces:tp,UnitPrice:l.UnitPrice,LineTotal:r2(tp*l.UnitPrice),
+              ...('UnitCost' in l?{UnitCost:l.UnitCost}:{})});   // المرتجع بنفس تكلفة البيع الأصلي (سطر قديم قبل v14.1 مالوش UnitCost فبيفضل من غيرها)
           }
           nextNumber(t,'cn',now,dev,number=>{
             const total=r2(cnLines.reduce((s,l)=>s+l.LineTotal,0)),pcsAll=cnLines.reduce((s,l)=>s+l.TotalPieces,0);
@@ -164,7 +165,8 @@ export async function editInvoice({invoiceId,items,reason,user,allowNegative=fal
     if(!Number.isInteger(tp)||tp<=0)throw E('كمية غير صالحة','BAD_QTY');
     if(!(price>0))throw E('سعر غير صالح','BAD_PRICE');
     return {LineID:uuid(),InvoiceID:invoiceId,LineNo:i+1,ProductID:it.p.ProductID,Code:it.p.Code,Name:it.p.Name||'',Cartons:it.cartons,Pieces:it.pieces,
-      PcsPerCarton:pcs,TotalPieces:tp,OriginalUnitPrice:it.p.PricePiece||null,UnitPrice:price,PriceChanged:false,LineTotal:r2(tp*price)};
+      PcsPerCarton:pcs,TotalPieces:tp,OriginalUnitPrice:it.p.PricePiece||null,UnitPrice:price,PriceChanged:false,LineTotal:r2(tp*price),
+      UnitCost:typeof it.p.Cost==='number'&&Number.isFinite(it.p.Cost)?it.p.Cost:null,UpdatedAt:now};
   });
   return txRun(['invoices','invoice_lines','invoice_revisions','credit_note_lines','movements','syncq','audit'],(t,fail,setOut)=>{
     t.objectStore('invoices').get(invoiceId).onsuccess=e=>{
@@ -177,7 +179,7 @@ export async function editInvoice({invoiceId,items,reason,user,allowNegative=fal
           const old=e3.target.result.filter(l=>!l.Superseded).sort((a,b)=>a.LineNo-b.LineNo);
           const oldBy=new Map(old.map(l=>[l.ProductID,l]));
           for(const l of nl){                                   // السعر الأصلي يفضل زي ما اتسجل وقت البيع لو الصنف كان في الفاتورة
-            const o=oldBy.get(l.ProductID);if(o){l.OriginalUnitPrice=o.OriginalUnitPrice??null;l.LineID=o.LineID}
+            const o=oldBy.get(l.ProductID);if(o){l.OriginalUnitPrice=o.OriginalUnitPrice??null;l.LineID=o.LineID;if('UnitCost' in o)l.UnitCost=o.UnitCost;else delete l.UnitCost}   // الصنف الباقي بيحتفظ بتكلفة وقت البيع الأصلي
             l.PriceChanged=l.OriginalUnitPrice!==null&&l.OriginalUnitPrice!==l.UnitPrice;
           }
           for(const [pid,r] of retBy){                           // حد الصافي: مينفعش الكمية الجديدة تقل عن المرتجع (ولا حذف صنف اترجّع منه)
