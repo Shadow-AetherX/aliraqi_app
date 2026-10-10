@@ -113,4 +113,11 @@ export function txRun(stores,fn){
     try{fn(t,fail,v=>{out=v})}catch(e){fail(e)}
   }));
 }
+// المخزن المختار تلقائياً في الاستلام/الصرف/التحويل/الفواتير: المخزن الافتراضي النشط أولاً، وبعده آخر مخزن استخدمه الجهاز، وإلا فاضي (المستخدم يختار).
+export function pickWarehouse(whs){
+  const ok=id=>!!id&&whs.some(w=>w.WarehouseID===id);
+  const def=whs.find(w=>w.IsDefault&&w.Active!==false)?.WarehouseID;
+  if(ok(def))return def;
+  const last=localStorage.getItem('alr_last_wh');return ok(last)?last:'';
+}
 export const ymd=(d=new Date())=>d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
