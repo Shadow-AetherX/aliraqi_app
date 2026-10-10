@@ -1,7 +1,7 @@
 // زرار المساعدة (؟): ثابت أعلى التطبيق بعد تسجيل الدخول. بيفتح دليل سريع + حل مشكلة الكاميرا والأذونات.
 // بيشتغل لوحده (بيتحمّل من index.html) من غير ما يحتاج تعديل في app.js. وللتحكم اليدوي: setHelpVisible(true/false).
 import {el} from './ui.js';
-const APP_VER='v9';
+const APP_VER='v10';
 let btn;
 const sec=(title,...kids)=>el('details',{class:'help-sec'},el('summary',{},title),el('div',{class:'help-body'},...kids));
 const ul=(...items)=>el('ul',{},...items.map(t=>el('li',{},t)));
