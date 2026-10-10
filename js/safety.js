@@ -6,7 +6,7 @@ import {openDB,all,get,put,txRun,nowISO,deviceId,audit,ymd} from './db.js';
 import {can} from './auth.js';
 import {$,el,toast,fmt,modal} from './ui.js';
 
-const APP_VER='v13';
+const APP_VER='v14';
 const DATA_STORES={customers:'CustomerID',products:'ProductID',warehouses:'WarehouseID',invoices:'InvoiceID',invoice_lines:'LineID',invoice_revisions:'RevisionID',
   credit_notes:'CreditNoteID',credit_note_lines:'LineID',movements:'MovementID',stock_docs:'DocID',audit:'AuditID'};
 const STORE_AR={customers:'العملاء',products:'الأصناف',warehouses:'المخازن',invoices:'الفواتير',invoice_lines:'سطور الفواتير',invoice_revisions:'نسخ تعديل الفواتير',
