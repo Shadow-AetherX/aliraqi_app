@@ -8,6 +8,9 @@ import {showInvoices,showInvoiceNew} from './invoices.js';
 import {showUsers} from './users.js';
 import {showSyncCenter,startAutoSync,syncState,subscribe} from './sync.js';
 import {showWarehouses,backfillWarehouses} from './warehouses.js';
+import {showReports} from './reports.js';
+import {showAuditLog} from './auditlog.js';
+import {showSafety} from './safety.js';
 import {$,el,toast} from './ui.js';
 async function renderStatus(){
   const n=await pendingCount().catch(()=>0);const on=navigator.onLine;const ss=syncState();
@@ -46,7 +49,10 @@ const HANDLERS={
   'المستخدمين':u=>showUsers(u,back(u)),
   'مركز المزامنة':u=>showSyncCenter(u,back(u)),
   'المخازن':u=>showWarehouses(u,back(u)),
-  'نقل بين المخازن':u=>showStockDoc(u,'TR',back(u))
+  'نقل بين المخازن':u=>showStockDoc(u,'TR',back(u)),
+  'التقارير':u=>showReports(u,back(u)),
+  'سجل العمليات':u=>showAuditLog(u,back(u)),
+  'الإعدادات':u=>showSafety(u,back(u))
 };
 const PRIM_H={StockIn:u=>showStockDoc(u,'IN',back(u)),StockOut:u=>showStockDoc(u,'OUT',back(u)),CreateInvoice:u=>showInvoiceNew(u,back(u))};
 const MODULES=[['ViewProducts','المنتجات'],['ViewCustomers','العملاء'],['ViewStock','المخزون'],['ViewStock','مستندات المخزن'],['StockTransfer','نقل بين المخازن'],['ManageWarehouses','المخازن'],['CreateInvoice','الفواتير'],['ViewReports','التقارير'],['ManageUsers','المستخدمين'],['ManageRoles','الأدوار والصلاحيات'],['ViewAudit','سجل العمليات'],['ManageSync','مركز المزامنة'],['ManageSettings','الإعدادات']];
