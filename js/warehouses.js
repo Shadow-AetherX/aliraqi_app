@@ -14,7 +14,7 @@ export async function backfillWarehouses(){
   const now=nowISO();
   await txRun(['warehouses','syncq','settings'],t=>{
     for(const w of ws){
-      const r={...w,Address:w.Address||'',Notes:w.Notes||'',IsDefault:!!w.IsDefault,CreatedAt:w.CreatedAt||now,UpdatedAt:now,SyncStatus:'PENDING'};
+      const r={...w,Address:w.Address||'',Notes:w.Notes||'',IsDefault:!!w.IsDefault,CreatedAt:w.CreatedAt||now,UpdatedAt:w.UpdatedAt||'1970-01-01T00:00:00.000Z',SyncStatus:'PENDING'};
       t.objectStore('warehouses').put(r);
       t.objectStore('syncq').put({OpID:uuid(),Entity:'warehouses',EntityID:r.WarehouseID,Status:'PENDING',CreatedAt:now,Tries:0});
     }
