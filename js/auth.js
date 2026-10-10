@@ -1,5 +1,5 @@
 // الصلاحيات + الدخول. ملحوظة أمان: ده تحقق محلي للأوفلاين بس — الإنفاذ الحقيقي هيبقى في Apps Script وقت المزامنة.
-import {all,get,put,uuid} from './db.js';
+import {all,get,put,uuid,txRun,nowISO} from './db.js';
 export const PERMS=['ViewProducts','EditProducts','ChangeDefaultPrice','ViewStock','StockIn','StockOut','StockTransfer','CreateInvoice','EditInvoice','CancelInvoice','CreateReturn','ViewCustomers','EditCustomers','ViewReports','ViewCost','ViewAudit','ManageUsers','ManageRoles','ManageSettings','ManageSync','ManageWarehouses','OverridePrice','OverrideStock','VoidStockDoc'];
 // الرتبة: رقم أقل = صلاحية أعلى. المستخدم ما يعدلش حد رتبته أعلى منه أو مساوية (إلا الـ Owner)
 export const ROLES=[
@@ -26,6 +26,7 @@ export async function refreshRoles(){for(const r of ROLES) await put('roles',r)}
 export async function login(userId,pin){
   const u=await get('users',userId);
   if(!u||!u.Active) return {ok:false,msg:'المستخدم غير متاح'};
+  if(u.PinHash==='!') return {ok:false,msg:'الحساب ده جاي من جهاز تاني ولسه ما اتحطش له رقم سري على الجهاز ده — اطلب من المالك يعيّنه من «المستخدمين»'};
   if(await sha256(u.Salt+pin)!==u.PinHash) return {ok:false,msg:'الرقم السري غير صحيح'};
   return {ok:true,user:u};
 }
@@ -57,5 +58,8 @@ async function guardUserWrite(actor,target){
 }
 export async function saveUser(actor,target){
   if(!await guardUserWrite(actor,target)) throw Object.assign(new Error('مفيش صلاحية تعديل الحساب ده'),{code:'USER_PROTECTED'});
-  await put('users',target);return target;
+  const now=nowISO();target.UpdatedAt=now;target.SyncStatus='PENDING';          // UpdatedAt = أساس «الأحدث يكسب» في المزامنة. الـ PIN نفسه مش بيتزامن أبداً
+  await txRun(['users','syncq'],t=>{t.objectStore('users').put(target);
+    t.objectStore('syncq').put({OpID:uuid(),Entity:'users',EntityID:target.UserID,Status:'PENDING',CreatedAt:now,Tries:0})});
+  return target;
 }
