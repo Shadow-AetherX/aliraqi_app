@@ -1,8 +1,8 @@
 // تحديث الـ Service Worker بيغيّر الكاش بس — قاعدة البيانات (IndexedDB) مش بتتلمس أبداً
-const VER='v10', SHELL_CACHE='alr-shell-'+VER, IMG_CACHE='alr-img-v1';
+const VER='v12', SHELL_CACHE='alr-shell-'+VER, IMG_CACHE='alr-img-v1';
 // ملفات أساسية: لو واحد منها ناقص التثبيت يفشل (عشان نعرف). ملفات اختيارية: بتتحمّل لو موجودة بس.
 const CORE=['./','index.html','manifest.json','icon.svg','products.json','css/app.css','css/invoice.css',
-  'js/db.js','js/auth.js','js/ui.js','js/products.js','js/stock.js','js/scanner.js','js/customers.js','js/invoices.js','js/invoice-pdf.js','js/reversal.js','js/stockdocs.js','js/users.js','js/sync.js','js/warehouses.js','js/help.js','js/app.js','js/jsQR.js'];
+  'js/db.js','js/auth.js','js/ui.js','js/products.js','js/stock.js','js/scanner.js','js/customers.js','js/invoices.js','js/invoice-pdf.js','js/reversal.js','js/stockdocs.js','js/users.js','js/sync.js','js/warehouses.js','js/transfers.js','js/transfer-pdf.js','js/product-edit.js','js/help.js','js/app.js','js/jsQR.js'];
 const OPTIONAL=['js/pdf-lib.min.js','fonts/invoice-regular.ttf','fonts/invoice-bold.ttf'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil((async()=>{
   const c=await caches.open(SHELL_CACHE);
