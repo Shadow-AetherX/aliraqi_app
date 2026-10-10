@@ -7,6 +7,7 @@ import {showCustomers} from './customers.js';
 import {showInvoices,showInvoiceNew} from './invoices.js';
 import {showUsers} from './users.js';
 import {showSyncCenter,startAutoSync,syncState,subscribe} from './sync.js';
+import {showWarehouses,backfillWarehouses} from './warehouses.js';
 import {$,el,toast} from './ui.js';
 async function renderStatus(){
   const n=await pendingCount().catch(()=>0);const on=navigator.onLine;const ss=syncState();
@@ -43,10 +44,11 @@ const HANDLERS={
   'العملاء':u=>showCustomers(u,back(u),c=>showInvoiceNew(u,()=>showCustomers(u,back(u)),{customer:c})),
   'الفواتير':u=>showInvoices(u,back(u)),
   'المستخدمين':u=>showUsers(u,back(u)),
-  'مركز المزامنة':u=>showSyncCenter(u,back(u))
+  'مركز المزامنة':u=>showSyncCenter(u,back(u)),
+  'المخازن':u=>showWarehouses(u,back(u))
 };
 const PRIM_H={StockIn:u=>showStockDoc(u,'IN',back(u)),StockOut:u=>showStockDoc(u,'OUT',back(u)),CreateInvoice:u=>showInvoiceNew(u,back(u))};
-const MODULES=[['ViewProducts','المنتجات'],['ViewCustomers','العملاء'],['ViewStock','المخزون'],['ViewStock','مستندات المخزن'],['StockTransfer','نقل بين المخازن'],['ViewStock','المخازن'],['CreateInvoice','الفواتير'],['ViewReports','التقارير'],['ManageUsers','المستخدمين'],['ManageRoles','الأدوار والصلاحيات'],['ViewAudit','سجل العمليات'],['ManageSync','مركز المزامنة'],['ManageSettings','الإعدادات']];
+const MODULES=[['ViewProducts','المنتجات'],['ViewCustomers','العملاء'],['ViewStock','المخزون'],['ViewStock','مستندات المخزن'],['StockTransfer','نقل بين المخازن'],['ManageWarehouses','المخازن'],['CreateInvoice','الفواتير'],['ViewReports','التقارير'],['ManageUsers','المستخدمين'],['ManageRoles','الأدوار والصلاحيات'],['ViewAudit','سجل العمليات'],['ManageSync','مركز المزامنة'],['ManageSettings','الإعدادات']];
 async function showDashboard(user){
   const soon=()=>toast('الشاشة دي لسه تحت التطوير');
   const prim=[];for(const[p,ic,ar,en,cls]of PRIMARY) if(await can(user,p)) prim.push(el('button',{class:'big '+cls,onclick:()=>(PRIM_H[p]||soon)(user)},el('span',{class:'ic'},ic),ar,el('small',{},en)));
@@ -56,7 +58,7 @@ async function showDashboard(user){
     el('div',{class:'primary'},prim),el('div',{class:'grid'},tiles)));
 }
 async function boot(){
-  await openDB();await seedIfEmpty();await refreshRoles();await seedProducts();await backfillStockDocs().catch(()=>{});deviceId();await renderStatus();
+  await openDB();await seedIfEmpty();await refreshRoles();await seedProducts();await backfillStockDocs().catch(()=>{});await backfillWarehouses().catch(()=>{});deviceId();await renderStatus();
   subscribe(()=>renderStatus());startAutoSync();
   addEventListener('online',renderStatus);addEventListener('offline',renderStatus);setInterval(renderStatus,15000);
   if('serviceWorker' in navigator) {navigator.serviceWorker.register('sw.js').catch(()=>{});navigator.serviceWorker.addEventListener('controllerchange',()=>toast('تم تحديث التطبيق — أعد فتح الصفحة'))}
