@@ -1,0 +1,45 @@
+/* إضافات الفواتير والمساعدة — ملف منفصل عشان ما نلمسش app.css */
+.helpbtn{position:fixed;top:4px;left:8px;z-index:90;width:28px;height:28px;border-radius:50%;border:2px solid #fff;background:#1f9d76;color:#fff;font:700 16px/1 inherit;cursor:pointer;padding:0;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.helpbtn[hidden]{display:none}
+.sheet.help{max-height:88vh;overflow:auto}
+.help-sec{border:1px solid #d5dbe5;border-radius:10px;margin:8px 0;background:#fff}
+.help-sec>summary{padding:12px 14px;font-weight:700;color:#1b3a63;cursor:pointer}
+.help-body{padding:0 14px 12px;line-height:1.8}
+.help-body h4{margin:12px 0 4px;color:#1f9d76}.help-body ul,.help-body ol{margin:4px 0;padding-inline-start:20px}
+.inv-cust{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border:1px solid #d5dbe5;border-radius:10px;background:#f3f6fb;margin:8px 0}
+.inv-lbl{display:block;font-size:12px;color:#5b6577}
+.inv-lt{margin-top:6px}.inv-sub{display:block;color:#5b6577}
+.inv-bar{position:sticky;bottom:0;display:flex;justify-content:space-between;align-items:center;padding:12px 14px;margin:10px 0;background:#1b3a63;color:#fff;border-radius:10px;font-size:18px}
+.inv-grand{font-size:20px}
+.slqty{flex-wrap:wrap}.slqty label{flex:1 1 90px}
+.inv-pages{display:grid;gap:10px;margin-top:10px}.inv-pages img{width:100%;border:1px solid #d5dbe5;border-radius:6px;background:#fff}
+.inv-files .btnrow{display:flex;flex-wrap:wrap;gap:8px}
+/* مساحة لزرار ؟ فوق شريط الحالة (الطرف الشمال) عشان ما يغطيش «كل شيء متزامن» */
+.status-bar{padding-left:46px}
+
+/* ===== المراجعة والعكس (v7) ===== */
+.btn.danger{background:#c2564e}
+.btn.ghost.danger{background:transparent;color:#c2564e;border-color:#c2564e}
+.bdg.void{background:#fbeeed;color:#c2564e}
+.bdg.edited{background:#fff4d6;color:#8a6100}
+.bdg.cn{background:#e6edf7;color:#1b3a63}
+.badges.top{margin:0 0 8px}
+.btnrow.act{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.btnrow.act .btn{flex:1 1 140px;width:auto}
+.drow .btn.ghost{min-height:34px;padding:0 14px;flex:0 0 auto}
+.drow small{display:block;color:#5b6577}
+.voidbox{background:#fbeeed;border:1px solid #c2564e;border-radius:10px;padding:8px 12px;margin:8px 0}
+.editwarn{background:#fff4d6;border-radius:10px;padding:8px 12px;margin:8px 0;font-size:.85rem}
+
+/* ===== التقارير (v14) ===== */
+.rep [hidden]{display:none!important}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.kpi span{display:block;font-size:.75rem;color:var(--muted);font-weight:700}
+.kpi b{display:block;font-size:1.1rem;color:var(--navy);margin-top:2px}
+.kpi.good b{color:var(--emerald)}.kpi.bad b{color:var(--danger)}
+.rep .filters .field{flex:1 1 140px;margin:0}
+.rep .filters .field input{min-height:42px}
+.rep-chip{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 8px 6px 12px;margin-bottom:10px;border:1px solid var(--navy);border-radius:999px;background:var(--navy-soft);color:var(--navy)}
+.rep-chip[hidden]{display:none}
+.rep .drow b.warn{font-size:inherit}
