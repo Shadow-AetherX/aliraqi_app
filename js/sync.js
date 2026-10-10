@@ -7,9 +7,9 @@ import {$,el,toast,fmt,modal} from './ui.js';
 
 const APP_VER='v9';
 const KEYS={customers:'CustomerID',invoices:'InvoiceID',invoice_lines:'LineID',invoice_revisions:'RevisionID',credit_notes:'CreditNoteID',
-  credit_note_lines:'LineID',movements:'MovementID',stock_docs:'DocID',audit:'AuditID',users:'UserID',products:'ProductID'};
+  credit_note_lines:'LineID',movements:'MovementID',stock_docs:'DocID',audit:'AuditID',users:'UserID',products:'ProductID',warehouses:'WarehouseID'};
 // جداول عليها SyncStatus (بتتعلّم SYNCED بعد الرفع، وبنفحصها لو سجل اتغيّر من غير ما يتحط في الطابور)
-const SCAN=['customers','invoices','invoice_lines','invoice_revisions','credit_notes','credit_note_lines','movements','stock_docs','audit'];
+const SCAN=['customers','invoices','invoice_lines','invoice_revisions','credit_notes','credit_note_lines','movements','stock_docs','audit','warehouses'];
 const USER_SAFE=['UserID','Name','RoleID','Rank','Active','MustChangePin','ExtraPerms','DeniedPerms'];   // مفيش Salt ولا PinHash
 const MAX_TRIES=8,BATCH_OPS=40,BATCH_ITEMS=80,BATCH_BYTES=300000,TIMEOUT=30000,MAX_BATCHES=60;
 
