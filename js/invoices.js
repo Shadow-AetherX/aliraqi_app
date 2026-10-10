@@ -26,7 +26,8 @@ export function postInvoice({customer,warehouseId,items,user,notes='',allowNegat
     if(!(price>0)) throw new Error('سعر غير صالح');
     const orig=it.p.PricePiece||null;
     return {LineID:uuid(),InvoiceID:invId,LineNo:i+1,ProductID:it.p.ProductID,Code:it.p.Code,Name:it.p.Name||'',Cartons:it.cartons,Pieces:it.pieces,
-      PcsPerCarton:pcs,TotalPieces:tp,OriginalUnitPrice:orig,UnitPrice:price,PriceChanged:orig!==null&&orig!==price,LineTotal:r2(tp*price)};
+      PcsPerCarton:pcs,TotalPieces:tp,OriginalUnitPrice:orig,UnitPrice:price,PriceChanged:orig!==null&&orig!==price,LineTotal:r2(tp*price),
+      UnitCost:typeof it.p.Cost==='number'&&Number.isFinite(it.p.Cost)?it.p.Cost:null,UpdatedAt:now};   // UnitCost = تكلفة القطعة وقت البيع (مثبّتة): null = الصنف ماكانش له تكلفة وقتها
   });
   const total=r2(lines.reduce((s,l)=>s+l.LineTotal,0)),pcsAll=lines.reduce((s,l)=>s+l.TotalPieces,0);
   return txRun(['invoices','invoice_lines','movements','syncq','audit','settings'],(t,fail,setOut)=>{
