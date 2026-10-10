@@ -30,3 +30,16 @@
 .drow small{display:block;color:#5b6577}
 .voidbox{background:#fbeeed;border:1px solid #c2564e;border-radius:10px;padding:8px 12px;margin:8px 0}
 .editwarn{background:#fff4d6;border-radius:10px;padding:8px 12px;margin:8px 0;font-size:.85rem}
+
+/* ===== التقارير (v14) ===== */
+.rep [hidden]{display:none!important}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.kpi span{display:block;font-size:.75rem;color:var(--muted);font-weight:700}
+.kpi b{display:block;font-size:1.1rem;color:var(--navy);margin-top:2px}
+.kpi.good b{color:var(--emerald)}.kpi.bad b{color:var(--danger)}
+.rep .filters .field{flex:1 1 140px;margin:0}
+.rep .filters .field input{min-height:42px}
+.rep-chip{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 8px 6px 12px;margin-bottom:10px;border:1px solid var(--navy);border-radius:999px;background:var(--navy-soft);color:var(--navy)}
+.rep-chip[hidden]{display:none}
+.rep .drow b.warn{font-size:inherit}
