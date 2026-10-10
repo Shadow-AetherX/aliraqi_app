@@ -45,7 +45,8 @@ const HANDLERS={
   'الفواتير':u=>showInvoices(u,back(u)),
   'المستخدمين':u=>showUsers(u,back(u)),
   'مركز المزامنة':u=>showSyncCenter(u,back(u)),
-  'المخازن':u=>showWarehouses(u,back(u))
+  'المخازن':u=>showWarehouses(u,back(u)),
+  'نقل بين المخازن':u=>showStockDoc(u,'TR',back(u))
 };
 const PRIM_H={StockIn:u=>showStockDoc(u,'IN',back(u)),StockOut:u=>showStockDoc(u,'OUT',back(u)),CreateInvoice:u=>showInvoiceNew(u,back(u))};
 const MODULES=[['ViewProducts','المنتجات'],['ViewCustomers','العملاء'],['ViewStock','المخزون'],['ViewStock','مستندات المخزن'],['StockTransfer','نقل بين المخازن'],['ManageWarehouses','المخازن'],['CreateInvoice','الفواتير'],['ViewReports','التقارير'],['ManageUsers','المستخدمين'],['ManageRoles','الأدوار والصلاحيات'],['ViewAudit','سجل العمليات'],['ManageSync','مركز المزامنة'],['ManageSettings','الإعدادات']];
