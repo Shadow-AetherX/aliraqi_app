@@ -5,11 +5,11 @@ import {all,get,put,byIndex,txRun,uuid,nowISO,deviceId,pendingCount} from './db.
 import {can} from './auth.js';
 import {$,el,toast,fmt,modal} from './ui.js';
 
-const APP_VER='v9';
+const APP_VER='v12';
 const KEYS={customers:'CustomerID',invoices:'InvoiceID',invoice_lines:'LineID',invoice_revisions:'RevisionID',credit_notes:'CreditNoteID',
   credit_note_lines:'LineID',movements:'MovementID',stock_docs:'DocID',audit:'AuditID',users:'UserID',products:'ProductID',warehouses:'WarehouseID'};
 // جداول عليها SyncStatus (بتتعلّم SYNCED بعد الرفع، وبنفحصها لو سجل اتغيّر من غير ما يتحط في الطابور)
-const SCAN=['customers','invoices','invoice_lines','invoice_revisions','credit_notes','credit_note_lines','movements','stock_docs','audit','warehouses'];
+const SCAN=['customers','invoices','invoice_lines','invoice_revisions','credit_notes','credit_note_lines','movements','stock_docs','audit','warehouses','products'];
 const USER_SAFE=['UserID','Name','RoleID','Rank','Active','MustChangePin','ExtraPerms','DeniedPerms'];   // مفيش Salt ولا PinHash
 const MAX_TRIES=8,BATCH_OPS=40,BATCH_ITEMS=80,BATCH_BYTES=300000,TIMEOUT=30000,MAX_BATCHES=60;
 
@@ -172,7 +172,7 @@ export function startAutoSync(){
 
 // ---------- الواجهة ----------
 const fdt=iso=>{if(!iso)return null;const d=new Date(iso),p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}/${p(d.getMonth()+1)}/${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`};
-const ENT_AR={movements:'حركة مخزون',stock_docs:'مستند مخزن',customers:'عميل',invoices:'فاتورة',invoice_lines:'سطر فاتورة',invoice_revisions:'نسخة تعديل',credit_notes:'مرتجع',credit_note_lines:'سطر مرتجع',audit:'سجل عمليات',users:'مستخدم',products:'صنف'};
+const ENT_AR={movements:'حركة مخزون',stock_docs:'مستند مخزن',customers:'عميل',invoices:'فاتورة',invoice_lines:'سطر فاتورة',invoice_revisions:'نسخة تعديل',credit_notes:'مرتجع',credit_note_lines:'سطر مرتجع',audit:'سجل عمليات',users:'مستخدم',products:'صنف',warehouses:'مخزن'};
 
 export async function showSyncCenter(user,onBack){
   if(!await can(user,'ManageSync')){toast('مركز المزامنة للمدير/المالك بس');onBack();return}
