@@ -1,5 +1,5 @@
 // شاشة «مستندات المخزن»: كل مستندات الاستلام والصرف + تفاصيل حركاتها + إلغاء (بصلاحية المدير) بحركات عكسية — مفيش حاجة بتتمسح.
-import {all,byIndex,txRun,uuid,ymd} from './db.js';
+import {all,byIndex,txRun,uuid,ymd,deviceId} from './db.js';
 import {can} from './auth.js';
 import {norm} from './products.js';
 import {$,el,toast,fmt,modal,askReason} from './ui.js';
@@ -14,7 +14,7 @@ const fdt=iso=>{const d=new Date(iso),p=n=>String(n).padStart(2,'0');return `${d
 export async function backfillStockDocs(){
   const [aud,docs]=await Promise.all([all('audit'),all('stock_docs')]);
   const have=new Set(docs.map(d=>d.DocID));
-  const miss=aud.filter(a=>a.EntityType==='StockDoc'&&(a.Action==='STOCK_IN'||a.Action==='STOCK_OUT')&&!have.has(a.EntityID));
+  const miss=aud.filter(a=>a.EntityType==='StockDoc'&&(a.Action==='STOCK_IN'||a.Action==='STOCK_OUT')&&!have.has(a.EntityID)&&a.DeviceID===deviceId());   // سجل عمليات جاي من جهاز تاني (بالمزامنة) مستنده الحقيقي بيتسحب مش بيتبنى هنا
   if(!miss.length)return 0;
   await txRun(['stock_docs','syncq'],t=>{
     for(const a of miss){
