@@ -25,10 +25,16 @@ export async function showProducts(user,onBack){
   const prods=(await all('products')).filter(p=>p.Active!==false).sort((a,b)=>a.SourceRow-b.SourceRow);
   const whs=(await all('warehouses')).filter(w=>w.Active);
   const canStock=await can(user,'ViewStock');
+  const canEdit=(await can(user,'EditProducts'))||(await can(user,'ChangeDefaultPrice')),canCost=await can(user,'ViewCost');
   const stock=new Map();
   if(canStock) for(const m of await all('movements')){const o=stock.get(m.ProductID)||{};o[m.WarehouseID]=(o[m.WarehouseID]||0)+m.QuantityPieces;stock.set(m.ProductID,o)}
-  const codeCount=new Map();prods.forEach(p=>codeCount.set(p.Code,(codeCount.get(p.Code)||0)+1));
-  prods.forEach(p=>{p._hay=norm(p.Name+' '+p.Category+' '+p.Code+' '+(p.Description||''));p._code=compact(p.Code);p._dup=codeCount.get(p.Code)>1;p._noPrice=p.PricePiece==null});
+  function recompute(){
+    const codeCount=new Map();prods.forEach(p=>codeCount.set(p.Code,(codeCount.get(p.Code)||0)+1));
+    prods.forEach(p=>{p._hay=norm(p.Name+' '+p.Category+' '+p.Code+' '+(p.Description||''));p._code=compact(p.Code);p._dup=codeCount.get(p.Code)>1;p._noPrice=p.PricePiece==null});
+  }
+  recompute();
+  // بعد تعديل صنف: نبدّل نسخته في الذاكرة ونعيد حساب البحث/الأكواد المكررة ونرسم القائمة تاني
+  const hooks={user,canEdit,canCost,onEdit:rec=>{const i=prods.findIndex(x=>x.ProductID===rec.ProductID);if(i>=0)prods[i]=rec;recompute();render()}};
   const cats=[...new Set(prods.map(p=>p.Category).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ar'));
   const S={q:'',cat:'',avail:'all',review:false,shown:PAGE};
 
@@ -51,7 +57,7 @@ export async function showProducts(user,onBack){
   function card(p){
     const img=p.Images[0]?el('img',{src:p.Images[0],alt:'',loading:'lazy',decoding:'async',referrerpolicy:'no-referrer'}):el('div',{class:'noimg'},'بدون صورة');
     const s=stock.get(p.ProductID);
-    return el('article',{class:'pcard',tabindex:'0',role:'button','aria-label':p.Name,onclick:()=>details(p),onkeydown:e=>{if(e.key==='Enter')details(p)}},
+    return el('article',{class:'pcard',tabindex:'0',role:'button','aria-label':p.Name,onclick:()=>details(p,hooks),onkeydown:e=>{if(e.key==='Enter')details(p,hooks)}},
       el('div',{class:'pimg'},img),
       el('div',{class:'pbody'},
         el('h3',{},p.Name||'(بدون اسم)'),
@@ -74,7 +80,7 @@ export async function showProducts(user,onBack){
   render();
 }
 
-function details(p){
+function details(p,hooks={}){
   let cur=0;const big=el('img',{class:'dbig',alt:'',decoding:'async',referrerpolicy:'no-referrer'});
   const thumbs=el('div',{class:'dthumbs'});
   const setImg=i=>{cur=i;big.src=p.Images[i]||'';[...thumbs.children].forEach((c,j)=>c.classList.toggle('on',j===i))};
@@ -87,8 +93,12 @@ function details(p){
       p.Images.length?el('div',{},big,p.Images.length>1&&thumbs):el('div',{class:'noimg tall'},'بدون صورة'),
       row('الكود',p.Code),row('القسم',p.Category||'—'),row('القطع في الكرتونة',fmt(p.PcsPerCarton)),
       row('سعر القطعة',p.PricePiece!=null?fmt(p.PricePiece)+' ج.م':'بانتظار التسعير'),row('سعر الكرتونة',p.PriceCarton!=null?fmt(p.PriceCarton)+' ج.م':'—'),
+      hooks.canCost&&row('التكلفة',p.Cost!=null?fmt(p.Cost)+' ج.م':'—'),
       row('التوفر',p.Available?'متاح':'غير متاح'),p.Description&&row('الوصف',p.Description),
       p.ReviewFlag&&el('p',{class:'note'},'ملاحظة مراجعة: '+p.ReviewFlag),
-      el('p',{class:'note'},'تعديل الأصناف والأسعار من داخل التطبيق هيتضاف في خطوة لاحقة.')));
+      hooks.canEdit&&el('div',{class:'btnrow act'},el('button',{class:'btn',type:'button',onclick:async()=>{
+        try{const m=await import('./product-edit.js');close();m.productForm({user:hooks.user,product:p,onSaved:hooks.onEdit})}
+        catch{toast('تعذر فتح شاشة التعديل — أعد تحميل الصفحة وانت متصل')}}},'✏️ تعديل الصنف')),
+      !hooks.canEdit&&el('p',{class:'note'},'تعديل الأصناف والأسعار للمدير/المالك بس.')));
   document.body.append(ov);if(p.Images.length)setImg(0);
 }
