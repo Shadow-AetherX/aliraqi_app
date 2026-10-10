@@ -10,13 +10,13 @@ import {showSyncCenter,startAutoSync,syncState,subscribe} from './sync.js';
 import {showWarehouses,backfillWarehouses} from './warehouses.js';
 import {showReports} from './reports.js';
 import {showAuditLog} from './auditlog.js';
-import {showSafety} from './safety.js';
+import {showSafety,protectStorage} from './safety.js';
 import {$,el,toast} from './ui.js';
 async function renderStatus(){
   const n=await pendingCount().catch(()=>0);const on=navigator.onLine;const ss=syncState();
   $('#statusBar').replaceChildren(
     el('span',{},el('i',{class:'dot'+(on?'':' off')}),on?'متصل':'أوفلاين — بياناتك محفوظة على الجهاز'),
-    el('span',{},ss.running?`جاري المزامنة… ${ss.done}/${ss.total}`:n?`في انتظار المزامنة: ${n}`:'كل شيء متزامن'));
+    el('span',{},ss.running?(ss.phase==='pull'?`جاري سحب التحديثات… ${ss.pulled}`:`جاري المزامنة… ${ss.done}/${ss.total}`):n?`في انتظار المزامنة: ${n}`:'كل شيء متزامن'));
 }
 async function showLogin(){
   const users=(await all('users')).filter(u=>u.Active);
@@ -65,7 +65,7 @@ async function showDashboard(user){
     el('div',{class:'primary'},prim),el('div',{class:'grid'},tiles)));
 }
 async function boot(){
-  await openDB();await seedIfEmpty();await refreshRoles();await seedProducts();await backfillStockDocs().catch(()=>{});await backfillWarehouses().catch(()=>{});deviceId();await renderStatus();
+  await openDB();protectStorage().catch(()=>{});await seedIfEmpty();await refreshRoles();await seedProducts();await backfillStockDocs().catch(()=>{});await backfillWarehouses().catch(()=>{});deviceId();await renderStatus();
   subscribe(()=>renderStatus());startAutoSync();
   addEventListener('online',renderStatus);addEventListener('offline',renderStatus);setInterval(renderStatus,15000);
   if('serviceWorker' in navigator) {navigator.serviceWorker.register('sw.js').catch(()=>{});navigator.serviceWorker.addEventListener('controllerchange',()=>toast('تم تحديث التطبيق — أعد فتح الصفحة'))}
