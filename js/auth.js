@@ -1,11 +1,11 @@
 // الصلاحيات + الدخول. ملحوظة أمان: ده تحقق محلي للأوفلاين بس — الإنفاذ الحقيقي هيبقى في Apps Script وقت المزامنة.
 import {all,get,put,uuid} from './db.js';
-export const PERMS=['ViewProducts','EditProducts','ChangeDefaultPrice','ViewStock','StockIn','StockOut','StockTransfer','CreateInvoice','EditInvoice','CancelInvoice','CreateReturn','ViewCustomers','EditCustomers','ViewReports','ViewCost','ViewAudit','ManageUsers','ManageRoles','ManageSettings','ManageSync','OverridePrice','OverrideStock','VoidStockDoc'];
+export const PERMS=['ViewProducts','EditProducts','ChangeDefaultPrice','ViewStock','StockIn','StockOut','StockTransfer','CreateInvoice','EditInvoice','CancelInvoice','CreateReturn','ViewCustomers','EditCustomers','ViewReports','ViewCost','ViewAudit','ManageUsers','ManageRoles','ManageSettings','ManageSync','ManageWarehouses','OverridePrice','OverrideStock','VoidStockDoc'];
 // الرتبة: رقم أقل = صلاحية أعلى. المستخدم ما يعدلش حد رتبته أعلى منه أو مساوية (إلا الـ Owner)
 export const ROLES=[
   {RoleID:'OWNER',Name:'مالك / إدارة عليا',Rank:1,Perms:[...PERMS]},
   {RoleID:'MANAGER',Name:'إدارة',Rank:2,Perms:PERMS.filter(p=>p!=='ManageRoles')},
-  {RoleID:'STAFF',Name:'موظف',Rank:3,Perms:PERMS.filter(p=>!['ManageRoles','ManageUsers','ViewCost','ManageSettings','EditInvoice','CancelInvoice','CreateReturn','OverridePrice','ChangeDefaultPrice','VoidStockDoc'].includes(p))}
+  {RoleID:'STAFF',Name:'موظف',Rank:3,Perms:PERMS.filter(p=>!['ManageRoles','ManageUsers','ManageWarehouses','ViewCost','ManageSettings','EditInvoice','CancelInvoice','CreateReturn','OverridePrice','ChangeDefaultPrice','VoidStockDoc'].includes(p))}
 ];
 export const WAREHOUSES=[{WarehouseID:'WH-FAYEZ',Name:'مخزن فايز',Active:true},{WarehouseID:'WH-EZBET-AMR',Name:'مخزن عزبة عمرو',Active:true}];
 const SEED_USERS=[['Karim','كريم','OWNER',1],['ElHag','الحاج','MANAGER',2],['Ahmed','أحمد','STAFF',3],['Nour','نور','STAFF',4]];
